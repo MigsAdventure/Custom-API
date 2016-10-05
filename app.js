@@ -3,6 +3,7 @@ const http = require('http');
 const qs = require('querystring');
 const md5 = require('md5');
 const moment = require('moment');
+const wd = require('word-definition');
 
 const server = http.createServer((req,res) => {
 
@@ -67,13 +68,21 @@ switch(method) {
           
           res.end(JSON.stringify(responses[random]));
           break;
-      }
 
-  
-    default:
-      res.statusCode = 404;
-      res.end('Not Found')
-}
+        case 'dictionary' : {
+                 wd.getDef(argument, 'en',null, def => {
+                   let word = JSON.stringify(def);
+                   res.write(word);
+                   res.end();
+                 }); 
+        }break;
+
+        default: {
+               res.statusCode = 404;
+               res.end('Not Found')
+        }
+      }
+  }
 
 });
 
