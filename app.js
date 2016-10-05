@@ -2,9 +2,7 @@ const PORT = 8000;
 const http = require('http');
 const qs = require('querystring');
 const md5 = require('md5');
-const moment = require('moment')
-
-
+const moment = require('moment');
 
 const server = http.createServer((req,res) => {
 
@@ -17,7 +15,7 @@ let urlChunks = url.split('/');
 let [na, path, argument,num1,num2] = urlChunks;
 let email = `/${md5(`${argument}`)}`;
 let bday = `/${argument}`
-let sentence = `/${argument}`
+let sent = decodeURI(`/${argument}`);
 let total = 0;
 
 switch(method) {
@@ -44,22 +42,31 @@ switch(method) {
           break;
 
         case 'sentence':
-          let chars = sentence.length - 1;
-          let words = sentence.split('%').length;
+          let chars = sent.length - 1;
+          let words = sent.split(' ').length;
           let avg = chars / words;
-          
+
           let sentInfo  = {
-            words: words,
-            chars: chars,
-            avg: avg
+            words,
+            chars,
+            avg
           }
 
           res.end(JSON.stringify(sentInfo));
           break;
 
         case 'birthday':
-        res.end(`${moment(`${bday}`, "MMDDYYYY").fromNow()}`);
-        break;
+          res.end(`${moment(`${bday}`, "MMDDYYYY").fromNow()}`);
+          break;
+
+        case '8ball' :
+          let random = Math.floor(Math.random() * 9);
+          let responses = ['yes','no','maybe', 'THE HELL?', 
+                          'YOU KIDDING ME?!??', 'HECK NO!', 
+                          'OF COURSE!', 'nah', 'sure why not?']
+          
+          res.end(JSON.stringify(responses[random]));
+          break;
       }
 
   
@@ -67,8 +74,6 @@ switch(method) {
       res.statusCode = 404;
       res.end('Not Found')
 }
-
-  
 
 });
 
